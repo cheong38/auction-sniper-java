@@ -1,5 +1,6 @@
-package auctionsniper;
+package test.endtoend.auctionsniper;
 
+import auctionsniper.Main;
 import org.hamcrest.Matcher;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.MessageListener;
@@ -10,13 +11,15 @@ import org.jivesoftware.smack.packet.Message;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.CoreMatchers.anything;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.notNullValue;
 
 public class FakeAuctionServer {
+
+    public static final String CURRENT_PRICE_EVENT_FORMAT = "SOLVersion: 1.1; Event: PRICE; CurrentPrice: %d; Increment: %d; Bidder: %s;";
+    public static final String CLOSE_EVENT_FORMAT = "SOLVersion: 1.1; Event: CLOSE;";
 
     public static final String ITEM_ID_AS_LOGIN = "auction-%s";
     public static final String AUCTION_RESOURCE = "Auction";
@@ -50,14 +53,14 @@ public class FakeAuctionServer {
     public void reportPrice(int price, int increment, String bidder) throws XMPPException {
         currentChat.sendMessage(
             String.format(
-                Main.CURRENT_PRICE_COMMAND_FORMAT,
+                CURRENT_PRICE_EVENT_FORMAT,
                 price, increment, bidder
             )
         );
     }
 
     public void announceClosed() throws XMPPException {
-        currentChat.sendMessage(new Message());
+        currentChat.sendMessage(CLOSE_EVENT_FORMAT);
     }
 
     public void stop() {

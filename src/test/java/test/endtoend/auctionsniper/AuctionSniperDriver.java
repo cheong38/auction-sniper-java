@@ -1,4 +1,4 @@
-package auctionsniper;
+package test.endtoend.auctionsniper;
 
 import org.assertj.swing.core.BasicRobot;
 import org.assertj.swing.core.GenericTypeMatcher;
