@@ -33,6 +33,7 @@ $ chmod +x run-test-openfire.sh
 openfire 에 어드민으로 접속해 테스트용 계정을 만든다.
 
 - 브라우저에서 localhost:9090 에 접속하여 어드민 계정 설정
+- 어드민 설정 시 서버 도메인을 localhost 로 설정
 - ID: auction-item-54321, PW: auction / ID: sniper PW: sniper 를 각각 생성
 
 `AuctionSniperEndToEndTest` 에서 테스트 케이스 실행

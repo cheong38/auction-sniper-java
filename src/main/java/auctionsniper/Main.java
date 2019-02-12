@@ -7,18 +7,19 @@ import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.packet.Message;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class Main {
 
-    public static final String MAIN_WINDOW_NAME = "Auction Sniper";
-    public static final String STATUS_JOINING = "Joining";
-    public static final String STATUS_LOST = "Lost";
     public static final String AUCTION_RESOURCE = "Auction";
+    public static final String CURRENT_PRICE_COMMAND_FORMAT = "SOLVersion: 1.1; Event: PRICE; CurrentPrice: %d; Increment: %d; Bidder: %s;";
+    public static final String JOIN_COMMAND_FORMAT = "SOLVersion: 1.1; Command: JOIN;";
+    public static final String BID_COMMAND_FORMAT = "SOLVersion: 1.1; Command: BID; Price: %d";
     private static final int ARG_HOSTNAME = 0;
     private static final int ARG_USERNAME = 1;
     private static final int ARG_PASSWORD = 2;
@@ -42,13 +43,23 @@ public class Main {
     }
 
     private void joinAuction(XMPPConnection connection, String itemId) throws XMPPException {
+        disconnectWhenUiCloses(connection);
         Chat chat = connection.getChatManager().createChat(
             auctionId(itemId, connection),
             (MessageListener) (chat1, message) -> {
-                ui.showStatus(STATUS_LOST);
+                ui.showStatus(MainWindow.STATUS_LOST);
             }
         );
-        chat.sendMessage(new Message());
+        chat.sendMessage(JOIN_COMMAND_FORMAT);
+    }
+
+    private void disconnectWhenUiCloses(XMPPConnection connection) {
+        ui.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                connection.disconnect();
+            }
+        });
     }
 
     private static String auctionId(String itemId, XMPPConnection connection) {
@@ -66,7 +77,12 @@ public class Main {
         SwingUtilities.invokeAndWait(() -> ui = new MainWindow());
     }
 
-    private class MainWindow extends JFrame {
+    public static class MainWindow extends JFrame {
+        public static final String MAIN_WINDOW_NAME = "Auction Sniper";
+        public static final String STATUS_JOINING = "Joining";
+        public static final String STATUS_LOST = "Lost";
+        public static final String STATUS_BIDDING = "Bidding";
+
         public static final String SNIPER_STATUS_NAME = "sniper status";
         private final JLabel sniperStatus = createLabel(STATUS_JOINING);
 

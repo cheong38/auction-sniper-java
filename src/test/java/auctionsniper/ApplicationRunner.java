@@ -1,13 +1,13 @@
 package auctionsniper;
 
 import static auctionsniper.FakeAuctionServer.XMPP_HOSTNAME;
-import static auctionsniper.Main.STATUS_JOINING;
-import static auctionsniper.Main.STATUS_LOST;
+import static auctionsniper.Main.MainWindow;
 
 public class ApplicationRunner {
 
     private static final String SNIPER_ID = "sniper";
     private static final String SNIPER_PASSWORD = "sniper";
+    public static final String SNIPER_XMPP_ID = SNIPER_ID + "@" + XMPP_HOSTNAME + "/Auction";
 
     private AuctionSniperDriver driver;
 
@@ -27,15 +27,18 @@ public class ApplicationRunner {
         thread.start();
 
         driver = new AuctionSniperDriver(1000);
-        driver.showsSniperStatus(STATUS_JOINING);
+        driver.showsSniperStatus(MainWindow.STATUS_JOINING);
     }
 
-    public void showsSniperHasLostAuction() throws InterruptedException {
-        Thread.sleep(500);
-        driver.showsSniperStatus(STATUS_LOST);
+    public void showsSniperHasLostAuction() {
+        driver.showsSniperStatus(MainWindow.STATUS_LOST);
     }
 
     public void stop() {
+        driver.dispose();
+    }
 
+    public void hasShownSniperIsBidding() {
+        driver.showsSniperStatus(MainWindow.STATUS_BIDDING);
     }
 }

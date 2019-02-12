@@ -2,27 +2,39 @@ package auctionsniper;
 
 import org.assertj.swing.core.BasicRobot;
 import org.assertj.swing.core.GenericTypeMatcher;
+import org.assertj.swing.core.Robot;
 import org.assertj.swing.fixture.FrameFixture;
 
 import java.awt.*;
 
+import static auctionsniper.Main.MainWindow;
 import static org.assertj.swing.finder.WindowFinder.findFrame;
 
 public class AuctionSniperDriver {
-    private final FrameFixture frame;
+    private final FrameFixture window;
+    private final Robot robot = BasicRobot.robotWithCurrentAwtHierarchy();
 
     public AuctionSniperDriver(int timeoutMillis) {
-        frame = findFrame(new GenericTypeMatcher<Frame>(Frame.class) {
+        window = findFrame(new GenericTypeMatcher<Frame>(Frame.class) {
             @Override
             protected boolean isMatching(Frame frame) {
-                return frame.getTitle().equals(Main.MAIN_WINDOW_NAME) && frame.isShowing();
+                return frame.getTitle().equals(MainWindow.MAIN_WINDOW_NAME) && frame.isShowing();
             }
         })
             .withTimeout(timeoutMillis)
-            .using(BasicRobot.robotWithCurrentAwtHierarchy());
+            .using(robot);
     }
 
     public void showsSniperStatus(String statusText) {
-        frame.label().requireText(statusText);
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        window.label().requireText(statusText);
+    }
+
+    public void dispose() {
+        robot.cleanUp();
     }
 }
